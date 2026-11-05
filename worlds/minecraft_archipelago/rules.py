@@ -20,11 +20,11 @@ def set_rules(world: "MinecraftArchipelagoWorld") -> None:
         return lambda state: all(state.has(i, player) for i in items)
     
     def tools(tier: int):
-        """tier 1=stone, 2=iron, 3=diamond, 4=netherite"""
+        """tier 1=stone, 2=gold, 3=iron, 4=diamond, 5=netherite"""
         return lambda state: state.has("Progressive Tools", player, tier)
-    
+
     def armor(tier: int):
-        """tier 1=leather, 2=iron, 3=diamond, 4=netherite"""
+        """tier 1=leather, 2=gold, 3=chainmail, 4=iron, 5=diamond, 6=netherite"""
         return lambda state: state.has("Progressive Armor", player, tier)
     
     # ── Region entrance rules ─────────────────────────────────────────────
@@ -40,8 +40,15 @@ def set_rules(world: "MinecraftArchipelagoWorld") -> None:
         has("Eye of Ender")
     
     # Helper
-    def rule(location: str, condition) -> None:
-        set_rule(mw.get_location(location, player), condition)
+    def rule(location: str, *conditions) -> None:
+        if not conditions:
+            return
+        elif len(conditions) == 1:
+            combined = conditions[0]
+        else:
+            def combined(state):
+                return all(cond(state) for cond in conditions)
+        set_rule(mw.get_location(location, player), combined)
 
 
     # ── Story ─────────────────────────────────────────────────────────────
@@ -139,8 +146,22 @@ def set_rules(world: "MinecraftArchipelagoWorld") -> None:
     # Mace smash attack
     rule("Over-Overkill",          has("Mace"))
 
-    # Need end exclusive mobs (ender dragon, shulker)
-    rule("Monsters Hunted",        has("Eye of Ender"))
+    # Ominous bottle needed to create ominous vault
+    rule("Revaulting",             has("Ominous Bottle"))
+
+    # Scraping copper needs an axe (any tool tier works)
+    rule("Lighten Up",             tools(1))
+
+    # Fishing
+    rule("Fishy Business",         has("Fishing Rod"))
+
+    # ── Nether (already gated by region, adding extra requirements) ───────
+
+    # Mining ancient debris needs diamond pickaxe
+    rule("Hidden in the Depths",   tools(4))
+
+    # Full netherite armor set — needs diamond tools to mine debris and smithing table to apply netherite
+    rule("Cover Me in Debris",     tools(4), has("Smithing Table"))
 
     # ── Husbandry ─────────────────────────────────────────────────────────
     

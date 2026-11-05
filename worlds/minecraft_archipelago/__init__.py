@@ -15,8 +15,8 @@ from .locations import location_table
 from .options import MinecraftArchipelagoOptions
 from .rules import set_rules as apply_rules
 
-LOOTABLE_CHECK_BASE_ID       = 42500
-TOTAL_LOOTABLE_CHECKS_DEFINED = 42   # how many are in locations.py
+LOOTABLE_CHECK_BASE_ID       = 22000
+TOTAL_LOOTABLE_CHECKS_DEFINED = 50   # how many are in locations.py
 
 
 class MinecraftArchipelagoItem(Item):
@@ -136,7 +136,7 @@ class MinecraftArchipelagoWorld(World):
         # Fill any remaining slots with random filler items.
         # There are 112 locations and 39 important items, so we need 73 fillers.
         filler_pool = list(filler_items.keys())
-        remaining = len(location_table) - len(pool)
+        remaining = total_active - len(pool)
 
         if remaining < 0:
             raise Exception(
