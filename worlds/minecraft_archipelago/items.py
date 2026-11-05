@@ -105,20 +105,29 @@ unlock_items: Dict[str, ItemData] = {
 # ── Gamerule items ─────────────────────────────────────────────────────────
 # Each permanently changes a world rule when received.
 # Comments show the 1.21.1 camelCase gamerule name and the value set on receipt.
+# The default value for each rule on world creation is the opposite of what is listed in the comment.
 # ──────────────────────────────────────────────────────────────────────────
 
 gamerule_items: Dict[str, ItemData] = {
-    "Raids":                   ItemData(13000, ItemClassification.progression),
-    "Disable Mob Griefing":    ItemData(13001, ItemClassification.useful),
-    "No Fall Damage":          ItemData(13002, ItemClassification.useful),
-    "No Fire Damage":          ItemData(13003, ItemClassification.useful),
-    "No Freeze Damage":        ItemData(13004, ItemClassification.useful),
-    "Keep Inventory":          ItemData(13005, ItemClassification.useful),
-    "Wandering Traders":       ItemData(13006, ItemClassification.useful),
-    "Water Source Conversion": ItemData(13007, ItemClassification.useful),
-    "Lava Source Conversion":  ItemData(13008, ItemClassification.useful),
-    "Phantom Spawning":        ItemData(13009, ItemClassification.progression),
-    "Warden Spawning":         ItemData(13010, ItemClassification.progression),
+    "No Drowning Damage":           ItemData(13000, ItemClassification.useful),             # drowningDamage false
+    "No Fire Damage":               ItemData(13001, ItemClassification.useful),             # fireDamage false
+    "No Freeze Damage":             ItemData(13002, ItemClassification.useful),             # freezeDamage false
+    "No Fall Damage":               ItemData(13003, ItemClassification.useful),             # fallDamage false
+    "Keep Inventory":               ItemData(13004, ItemClassification.useful),             # keepInventory true
+    "Natural Regeneration":         ItemData(13005, ItemClassification.useful),             # naturalRegeneration true
+
+    "Raids":                        ItemData(13006, ItemClassification.progression),        # disableRaids false
+    "Disable Mob Griefing":         ItemData(13007, ItemClassification.useful),             # mobGriefing false
+
+    "Phantom Spawning":             ItemData(13008, ItemClassification.progression),        # doInsomnia true
+    "Pillager Patrol Spawning":     ItemData(13009, ItemClassification.useful),             # doPatrolSpawning true
+    "Wandering Traders":            ItemData(13010, ItemClassification.useful),             # doTraderSpawning true
+    "Warden Spawning":              ItemData(13011, ItemClassification.progression),        # doWardenSpawning true
+
+    "Daylight Cycle":               ItemData(13012, ItemClassification.progression),        # doDaylightCycle true
+    "Weather Cycle":                ItemData(13013, ItemClassification.progression),        # doWeatherCycle true
+    "Lava Source Conversion":       ItemData(13014, ItemClassification.useful),             # lavaSourceConversion true
+    "Water Source Conversion":      ItemData(13015, ItemClassification.useful),             # waterSourceConversion true
 }
 
 # ── Filler items ───────────────────────────────────────────────────────────
