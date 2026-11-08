@@ -15,10 +15,8 @@ LOOTABLE_CHECK_BASE_ID = 22000
 #   "Nether"    — requires entering the Nether
 #   "The End"   — requires entering The End
 
-location_table: Dict[str, LocationData] = {
-
-    # ── Story (Minecraft tab) ─────────────────────────────────── Overworld ─
-
+# Advancements in the "Story" tab
+story_advancement_locations: Dict[str, LocationData] = {
     "Stone Age":                    LocationData(20000, "Overworld"),
     "Getting an Upgrade":           LocationData(20001, "Overworld"),
     "Acquire Hardware":             LocationData(20002, "Overworld"),
@@ -30,20 +28,20 @@ location_table: Dict[str, LocationData] = {
     "Diamonds!":                    LocationData(20008, "Overworld"),
     "We Need to Go Deeper":         LocationData(20009, "Overworld"),
     "Cover Me with Diamonds":       LocationData(20010, "Overworld"),
-    "Zombie Doctor":                LocationData(20011, "Overworld"),
-    "Eye Spy":                      LocationData(20012, "Overworld"),
-    "The End?":                     LocationData(20013, "Overworld"),
-    "Enchant Item":                 LocationData(20014, "Overworld"),
+    "Enchanter":                    LocationData(20011, "Overworld"),
+    "Zombie Doctor":                LocationData(20012, "Overworld"),
+    "Eye Spy":                      LocationData(20013, "Overworld"),
+    "The End?":                     LocationData(20014, "Overworld"),
+}
 
-    # ── Nether tab ───────────────────────────────────────────────── Nether ─
-
+nether_advancement_locations: Dict[str, LocationData] = {
     "Return to Sender":             LocationData(20015, "Nether"),
     "Those Were the Days":          LocationData(20016, "Nether"),
     "Hidden in the Depths":         LocationData(20017, "Nether"),
     "Subspace Bubble":              LocationData(20018, "Nether"),
     "A Terrible Fortress":          LocationData(20019, "Nether"),
     "Who Is Cutting Onions?":       LocationData(20020, "Nether"),
-    "Oh Shiny!":                    LocationData(20021, "Nether"),
+    "Oh Shiny":                    LocationData(20021, "Nether"),
     "This Boat Has Legs":           LocationData(20022, "Nether"),
     "Uneasy Alliance":              LocationData(20023, "Nether"),
     "War Pigs":                     LocationData(20024, "Nether"),
@@ -59,9 +57,9 @@ location_table: Dict[str, LocationData] = {
     "A Furious Cocktail":           LocationData(20034, "Nether"),
     "Beaconator":                   LocationData(20035, "Nether"),
     "How Did We Get Here?":         LocationData(20036, "Nether"),
+}
 
-    # ── The End tab ──────────────────────────────────────────── The End ─
-
+end_advancement_locations: Dict[str, LocationData] = {
     "Free the End":                     LocationData(20037, "The End"),
     "The Next Generation":              LocationData(20038, "The End"),
     "Remote Getaway":                   LocationData(20039, "The End"),
@@ -70,9 +68,9 @@ location_table: Dict[str, LocationData] = {
     "The City at the End of the Game":  LocationData(20042, "The End"),
     "Sky's the Limit":                  LocationData(20043, "The End"),
     "Great View From Up Here":          LocationData(20044, "The End"),
+}
 
-    # ── Adventure tab ─────────────────────────────────────────── Overworld ─
-    
+adventure_advancement_locations: Dict[str, LocationData] = {
     "Voluntary Exile":              LocationData(20045, "Overworld"),
     "Country Lode, Take Me Home":   LocationData(20046, "Overworld"),
     "Is It a Bird?":                LocationData(20047, "Overworld"),
@@ -88,7 +86,7 @@ location_table: Dict[str, LocationData] = {
     "Sneak 100":                    LocationData(20057, "Overworld"),
     "Sweet Dreams":                 LocationData(20058, "Overworld"),
     "Hero of the Village":          LocationData(20059, "Overworld"),
-    "Is It a Plane?":               LocationData(20060, "Overworld"),
+    "Is It a Balloon?":             LocationData(20060, "Overworld"),
     "A Throwaway Joke":             LocationData(20061, "Overworld"),
     "It Spreads":                   LocationData(20062, "Overworld"),
     "Take Aim":                     LocationData(20063, "Overworld"),
@@ -104,58 +102,60 @@ location_table: Dict[str, LocationData] = {
     "Adventuring Time":             LocationData(20073, "Overworld"),
     "Sound of Music":               LocationData(20074, "Overworld"),
     "Light as a Rabbit":            LocationData(20075, "Overworld"),
-    "Is It a Balloon?":             LocationData(20076, "Overworld"),
+    "Is It a Plane?":               LocationData(20076, "Overworld"),
     "Very Very Frightening":        LocationData(20077, "Overworld"),
     "Sniper Duel":                  LocationData(20078, "Overworld"),
     "Bullseye":                     LocationData(20079, "Overworld"),
     "Isn't It Scute?":              LocationData(20080, "Overworld"),
     "Minecraft: Trial(s) Edition":  LocationData(20081, "Overworld"),
-    "Lighten Up":                   LocationData(20082, "Overworld"),
-    "Who Needs Rockets?":           LocationData(20083, "Overworld"),
-    "Under Lock and Key":           LocationData(20084, "Overworld"),
-    "Revaulting":                   LocationData(20085, "Overworld"),
-    "Blowback":                     LocationData(20086, "Overworld"),
-    "Over-Overkill":                LocationData(20087, "Overworld"),
-    "Crafters Crafting Crafters":   LocationData(20088, "Overworld"),
+    "Crafters Crafting Crafters":   LocationData(20082, "Overworld"),
+    "Lighten Up":                   LocationData(20083, "Overworld"),
+    "Who Needs Rockets?":           LocationData(20084, "Overworld"),
+    "Under Lock and Key":           LocationData(20085, "Overworld"),
+    "Revaulting":                   LocationData(20086, "Overworld"),
+    "Blowback":                     LocationData(20087, "Overworld"),
+    "Over-Overkill":                LocationData(20088, "Overworld"),
+}
 
-    # ── Husbandry tab ─────────────────────────────────────────── Overworld ─
+husbandry_advancement_locations: Dict[str, LocationData] = {
+    "Bee Our Guest":                    LocationData(20089, "Overworld"),
+    "The Parrots and the Bats":         LocationData(20090, "Overworld"),
+    "You've Got a Friend in Me":        LocationData(20091, "Overworld"),
+    "Whatever Floats Your Goat!":       LocationData(20092, "Overworld"),
+    "Best Friends Forever":             LocationData(20093, "Overworld"),
+    "Glow and Behold!":                 LocationData(20094, "Overworld"),
+    "Fishy Business":                   LocationData(20095, "Overworld"),
+    "Total Beelocation":                LocationData(20096, "Overworld"),
+    "Bukkit Bukkit":                    LocationData(20097, "Overworld"),
+    "Smells Interesting":               LocationData(20098, "Overworld"),
+    "A Seedy Place":                    LocationData(20099, "Overworld"),
+    "Wax On":                           LocationData(20100, "Overworld"),
+    "Two by Two":                       LocationData(20101, "Overworld"),
+    "Birthday Song":                    LocationData(20102, "Overworld"),
+    "A Complete Catalogue":             LocationData(20103, "Overworld"),
+    "Tactical Fishing":                 LocationData(20104, "Overworld"),
+    "When the Squad Hops into Town":    LocationData(20105, "Overworld"),
+    "Little Sniffs":                    LocationData(20106, "Overworld"),
+    "A Balanced Diet":                  LocationData(20107, "Overworld"),
+    "Serious Dedication":               LocationData(20108, "Overworld"),
+    "Wax Off":                          LocationData(20109, "Overworld"),
+    "The Cutest Predator":              LocationData(20110, "Overworld"),
+    "With Our Powers Combined!":        LocationData(20111, "Overworld"),
+    "Planting the Past":                LocationData(20112, "Overworld"),
+    "The Healing Power of Friendship":  LocationData(20113, "Overworld"),
+    "Good as New":                      LocationData(20114, "Overworld"),
+    "The Whole Pack":                   LocationData(20115, "Overworld"),
+    "Shear Brilliance":                 LocationData(20116, "Overworld"),
+}
 
-    "Bee Our Guest":                LocationData(20089, "Overworld"),
-    "Repopulation":                 LocationData(20090, "Overworld"),
-    "You've Got a Friend in Me":    LocationData(20091, "Overworld"),
-    "Whatever Floats Your Goat!":   LocationData(20092, "Overworld"),
-    "Best Friends Forever":         LocationData(20093, "Overworld"),
-    "Glow and Behold!":             LocationData(20094, "Overworld"),
-    "Fishy Business":               LocationData(20095, "Overworld"),
-    "Total Beelocation":            LocationData(20096, "Overworld"),
-    "Bukkit Bukkit":                LocationData(20097, "Overworld"),
-    "Smells Interesting":           LocationData(20098, "Overworld"),
-    "A Seedy Place":                LocationData(20099, "Overworld"),
-    "Wax On":                       LocationData(20100, "Overworld"),
-    "Two by Two":                   LocationData(20101, "Overworld"),
-    "Allay Delivers Cake":          LocationData(20102, "Overworld"),
-    "A Complete Catalogue":         LocationData(20103, "Overworld"),
-    "Tactical Fishing":             LocationData(20104, "Overworld"),
-    "When the Squad Hops into Town":LocationData(20105, "Overworld"),
-    "Little Sniffs":                LocationData(20106, "Overworld"),
-    "A Balanced Diet":              LocationData(20107, "Overworld"),
-    "Serious Dedication":           LocationData(20108, "Overworld"),
-    "Wax Off":                      LocationData(20109, "Overworld"),
-    "The Cutest Predator":          LocationData(20110, "Overworld"),
-    "With Our Powers Combined!":    LocationData(20111, "Overworld"),
-    "Planting the Past":            LocationData(20112, "Overworld"),
-    "Kill Axolotl Target":          LocationData(20113, "Overworld"),
-    "Repair Wolf Armor":            LocationData(20114, "Overworld"),
-    "Whole Pack":                   LocationData(20115, "Overworld"),
-    "Remove Wolf Armor":            LocationData(20116, "Overworld"),
-
-    # ── Boss Kills ────────────────────────────────────────────────────────────
+boss_kill_locations: Dict[str, LocationData] = {
     "Ender Dragon Kill":            LocationData(21000, "The End"),
     "Wither Kill":                  LocationData(21001, "Nether"),
     "Elder Guardian Kill":          LocationData(21002, "Overworld"),
     "Warden Kill":                  LocationData(21003, "Overworld"),
+}
 
-    # ── Lootable Checks ───────────────────────────────────────────────────────
+lootable_check_locations: Dict[str, LocationData] = {
     # All 50 possible checks are defined here.
     # Only the first N are included in any given game, controlled by the
     # lootable_checks YAML option (default 20).
@@ -211,4 +211,20 @@ location_table: Dict[str, LocationData] = {
     "Lootable Check 48": LocationData(22047, "Overworld"),
     "Lootable Check 49": LocationData(22048, "Overworld"),
     "Lootable Check 50": LocationData(22049, "Overworld"),
+}
+
+# Combining all the advancements into one dict for easier access.
+advancement_locations: Dict[str, LocationData] = {
+    **story_advancement_locations,
+    **nether_advancement_locations,
+    **end_advancement_locations,
+    **adventure_advancement_locations,
+    **husbandry_advancement_locations,
+}
+
+# Combine all locations into a single dict
+location_table: Dict[str, LocationData] = {
+    **advancement_locations,
+    **boss_kill_locations,
+    **lootable_check_locations,
 }
