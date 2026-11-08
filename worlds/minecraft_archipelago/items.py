@@ -37,7 +37,8 @@ PROGRESSIVE_ITEM_COUNTS = {
 # Items marked with (Gift) in filler are the physical give version.
 # ──────────────────────────────────────────────────────────────────────────
 
-unlock_items: Dict[str, ItemData] = {
+# Unlocks for items that the player can use
+item_unlocks: Dict[str, ItemData] = {
     "Boat":             ItemData(11000, ItemClassification.progression),
     "Bone Meal":        ItemData(11001, ItemClassification.useful),
     "Bow":              ItemData(11002, ItemClassification.progression),
@@ -45,39 +46,50 @@ unlock_items: Dict[str, ItemData] = {
     "Crossbow":         ItemData(11004, ItemClassification.progression),
     "Elytra":           ItemData(11005, ItemClassification.progression),
     "Ender Pearl":      ItemData(11006, ItemClassification.progression),
-    "Eye of Ender":     ItemData(11007, ItemClassification.progression),
-    "Fishing Rod":      ItemData(11008, ItemClassification.progression),
-    "Flint and Steel":  ItemData(11009, ItemClassification.progression),
-    "Golden Apple":     ItemData(11010, ItemClassification.progression),
-    "Mace":             ItemData(11011, ItemClassification.progression),
-    "Map":              ItemData(11012, ItemClassification.filler),
-    "Name Tag":         ItemData(11013, ItemClassification.filler),
-    "Ominous Bottle":   ItemData(11014, ItemClassification.progression),
-    "Potion":           ItemData(11015, ItemClassification.progression),
-    "Shears":           ItemData(11016, ItemClassification.progression),
-    "Shield":           ItemData(11017, ItemClassification.progression),
-    "Spyglass":         ItemData(11018, ItemClassification.progression),
-    "Totem of Undying": ItemData(11019, ItemClassification.progression),
-    "Trident":          ItemData(11020, ItemClassification.progression),
-    "Turtle Shell":     ItemData(11021, ItemClassification.useful),
+    "End Crystal":      ItemData(11007, ItemClassification.progression),
+    "Eye of Ender":     ItemData(11008, ItemClassification.progression),
+    "Fishing Rod":      ItemData(11009, ItemClassification.progression),
+    "Flint and Steel":  ItemData(11010, ItemClassification.progression),
+    "Golden Apple":     ItemData(11011, ItemClassification.progression),
+    "Mace":             ItemData(11012, ItemClassification.progression),
+    "Map":              ItemData(11013, ItemClassification.filler),
+    "Name Tag":         ItemData(11014, ItemClassification.filler),
+    "Ominous Bottle":   ItemData(11015, ItemClassification.progression),
+    "Potion":           ItemData(11016, ItemClassification.progression),
+    "Shears":           ItemData(11017, ItemClassification.progression),
+    "Shield":           ItemData(11018, ItemClassification.progression),
+    "Spyglass":         ItemData(11019, ItemClassification.progression),
+    "Totem of Undying": ItemData(11020, ItemClassification.progression),
+    "Trident":          ItemData(11021, ItemClassification.progression),
+    "Turtle Shell":     ItemData(11022, ItemClassification.useful),
+}
 
-    # ── Block/structure unlock items ──────────────────────────────────────────
-    "Anvil":           ItemData(12004, ItemClassification.useful),
-    "Beacon":          ItemData(12000, ItemClassification.progression),
-    "Bed":             ItemData(12002, ItemClassification.progression),
-    "Brewing Stand":   ItemData(12005, ItemClassification.progression),
-    "Campfire":        ItemData(12013, ItemClassification.progression),
-    "Composter":       ItemData(12009, ItemClassification.useful),
-    "Conduit":         ItemData(12001, ItemClassification.progression),
-    "Ender Chest":     ItemData(12006, ItemClassification.useful),
-    "Furnace":         ItemData(12003, ItemClassification.progression),
-    "Grindstone":      ItemData(12011, ItemClassification.useful),
-    "Lightning Rod":   ItemData(12008, ItemClassification.progression),
-    "Shulker Box":     ItemData(12007, ItemClassification.useful),
-    "Smithing Table":  ItemData(12010, ItemClassification.progression),
-    "Target":          ItemData(12014, ItemClassification.progression),
-    "TNT":             ItemData(12015, ItemClassification.useful),
-    "Torch":           ItemData(12012, ItemClassification.useful),
+# Unlocks for blocks that can be placed and/or interacted with
+block_unlocks: Dict[str, ItemData] = {
+    "Anvil":                ItemData(12000, ItemClassification.useful),
+    "Beacon":               ItemData(12001, ItemClassification.progression),
+    "Bed":                  ItemData(12002, ItemClassification.progression),
+    "Brewing Stand":        ItemData(12003, ItemClassification.progression),
+    "Campfire":             ItemData(12004, ItemClassification.progression),
+    "Composter":            ItemData(12005, ItemClassification.useful),
+    "Conduit":              ItemData(12006, ItemClassification.progression),
+    "Enchanting Table":     ItemData(12007, ItemClassification.progression),
+    "Ender Chest":          ItemData(12008, ItemClassification.useful),
+    "Furnace":              ItemData(12009, ItemClassification.progression),
+    "Grindstone":           ItemData(12010, ItemClassification.useful),
+    "Lightning Rod":        ItemData(12011, ItemClassification.progression),
+    "Lodestone":            ItemData(12012, ItemClassification.progression),
+    "Respawn Anchor":       ItemData(12013, ItemClassification.progression),
+    "Shulker Box":          ItemData(12014, ItemClassification.useful),
+    "Smithing Table":       ItemData(12015, ItemClassification.progression),
+    "Target":               ItemData(12016, ItemClassification.progression),
+    "TNT":                  ItemData(12017, ItemClassification.useful),
+    "Torch":                ItemData(12018, ItemClassification.useful),
+}
+
+unlock_items: Dict[str, ItemData] = {
+    **item_unlocks,
+    **block_unlocks,    
 }
 
 # ── Gamerule items ─────────────────────────────────────────────────────────
@@ -154,41 +166,41 @@ filler_items: Dict[str, ItemData] = {
 
     # — Blocks ————————————————————————————————————————————————————————————
     "Cobblestone (Gift)":           ItemData(14029, ItemClassification.filler),
-    "Oak Planks (Gift)":            ItemData(14030, ItemClassification.filler),
-    "Dirt (Gift)":                  ItemData(14031, ItemClassification.filler),
-    "Torch (Gift)":                 ItemData(14032, ItemClassification.filler),
-    "Scaffolding (Gift)":           ItemData(14033, ItemClassification.filler),
+    "Dirt (Gift)":                  ItemData(14030, ItemClassification.filler),
+    "Oak Planks (Gift)":            ItemData(14031, ItemClassification.filler),
+    "Scaffolding (Gift)":           ItemData(14032, ItemClassification.filler),
+    "Torch (Gift)":                 ItemData(14033, ItemClassification.filler),
 
     # — Materials ——————————————————————————————————————————————————————————
-    "Coal (Gift)":                  ItemData(14034, ItemClassification.filler),
-    "Iron Ingot (Gift)":            ItemData(14035, ItemClassification.filler),
+    "Amethyst Shard (Gift)":        ItemData(14034, ItemClassification.filler),
+    "Coal (Gift)":                  ItemData(14035, ItemClassification.filler),
     "Copper Ingot (Gift)":          ItemData(14036, ItemClassification.filler),
-    "Gold Ingot (Gift)":            ItemData(14037, ItemClassification.filler),
+    "Diamond (Gift)":               ItemData(14037, ItemClassification.filler),
     "Emerald (Gift)":               ItemData(14038, ItemClassification.filler),
-    "Lapis Lazuli (Gift)":          ItemData(14039, ItemClassification.filler),
-    "Redstone (Gift)":              ItemData(14040, ItemClassification.filler),
-    "Glowstone Dust (Gift)":        ItemData(14041, ItemClassification.filler),
-    "Amethyst Shard (Gift)":        ItemData(14042, ItemClassification.filler),
-    "Diamond (Gift)":               ItemData(14043, ItemClassification.filler),
+    "Glowstone Dust (Gift)":        ItemData(14039, ItemClassification.filler),
+    "Gold Ingot (Gift)":            ItemData(14040, ItemClassification.filler),
+    "Iron Ingot (Gift)":            ItemData(14041, ItemClassification.filler),
+    "Lapis Lazuli (Gift)":          ItemData(14042, ItemClassification.filler),
+    "Leather (Gift)":               ItemData(14043, ItemClassification.filler),
     "Netherite Scrap (Gift)":       ItemData(14044, ItemClassification.filler),
     "Nether Quartz (Gift)":         ItemData(14045, ItemClassification.filler),
-    "Leather (Gift)":               ItemData(14046, ItemClassification.filler),
+    "Redstone (Gift)":              ItemData(14046, ItemClassification.filler),
 
     # — Utility ————————————————————————————————————————————————————————————
-    "Bucket (Gift)":                ItemData(14047, ItemClassification.filler),
-    "Compass (Gift)":               ItemData(14048, ItemClassification.filler),
-    "Fishing Rod (Gift)":           ItemData(14049, ItemClassification.filler),
-    "Flint and Steel (Gift)":       ItemData(14050, ItemClassification.filler),
-    "Boat (Gift)":                  ItemData(14051, ItemClassification.filler),
+    "Boat (Gift)":                  ItemData(14047, ItemClassification.filler),
+    "Bucket (Gift)":                ItemData(14048, ItemClassification.filler),
+    "Compass (Gift)":               ItemData(14049, ItemClassification.filler),
+    "Fishing Rod (Gift)":           ItemData(14050, ItemClassification.filler),
+    "Flint and Steel (Gift)":       ItemData(14051, ItemClassification.filler),
     "Spyglass (Gift)":              ItemData(14052, ItemClassification.filler),
 
     # — Junk ———————————————————————————————————————————————————————————————
-    "Flower (Gift)":                ItemData(14053, ItemClassification.filler),
-    "Coral (Gift)":                 ItemData(14054, ItemClassification.filler),
-    "Painting (Gift)":              ItemData(14055, ItemClassification.filler),
-    "Ink Sac (Gift)":               ItemData(14056, ItemClassification.filler),
-    "Dye (Gift)":                   ItemData(14057, ItemClassification.filler),
-    "Curse Enchanted Book (Gift)":  ItemData(14058, ItemClassification.filler),
+    "Coral (Gift)":                 ItemData(14053, ItemClassification.filler),
+    "Curse Enchanted Book (Gift)":  ItemData(14054, ItemClassification.filler),
+    "Dye (Gift)":                   ItemData(14055, ItemClassification.filler),
+    "Flower (Gift)":                ItemData(14056, ItemClassification.filler),
+    "Ink Sac (Gift)":               ItemData(14057, ItemClassification.filler),
+    "Painting (Gift)":              ItemData(14058, ItemClassification.filler),
 }
 
 # ── Combined table ─────────────────────────────────────────────────────────
