@@ -36,36 +36,34 @@ PROGRESSIVE_ITEM_COUNTS = {
 # Each sent once. Unlocks the ability to USE that item type.
 # Items marked with (Gift) in filler are the physical give version.
 # ──────────────────────────────────────────────────────────────────────────
+unlock_items: Dict[str, ItemData] = {
 
-# Unlocks for items that the player can use
-item_unlocks: Dict[str, ItemData] = {
-    "Boat":             ItemData(11000, ItemClassification.progression),
-    "Bone Meal":        ItemData(11001, ItemClassification.useful),
-    "Bow":              ItemData(11002, ItemClassification.progression),
-    "Bucket":           ItemData(11003, ItemClassification.progression),
-    "Crossbow":         ItemData(11004, ItemClassification.progression),
-    "Elytra":           ItemData(11005, ItemClassification.progression),
-    "Ender Pearl":      ItemData(11006, ItemClassification.progression),
-    "End Crystal":      ItemData(11007, ItemClassification.progression),
-    "Eye of Ender":     ItemData(11008, ItemClassification.progression),
-    "Fishing Rod":      ItemData(11009, ItemClassification.progression),
-    "Flint and Steel":  ItemData(11010, ItemClassification.progression),
-    "Golden Apple":     ItemData(11011, ItemClassification.progression),
-    "Mace":             ItemData(11012, ItemClassification.progression),
-    "Map":              ItemData(11013, ItemClassification.filler),
-    "Name Tag":         ItemData(11014, ItemClassification.filler),
-    "Ominous Bottle":   ItemData(11015, ItemClassification.progression),
-    "Potion":           ItemData(11016, ItemClassification.progression),
-    "Shears":           ItemData(11017, ItemClassification.progression),
-    "Shield":           ItemData(11018, ItemClassification.progression),
-    "Spyglass":         ItemData(11019, ItemClassification.progression),
-    "Totem of Undying": ItemData(11020, ItemClassification.progression),
-    "Trident":          ItemData(11021, ItemClassification.progression),
-    "Turtle Shell":     ItemData(11022, ItemClassification.useful),
-}
+    # ── Item unlocks ─────────────────────────────────────────────────────────
+    "Boat":                 ItemData(11000, ItemClassification.progression),
+    "Bone Meal":            ItemData(11001, ItemClassification.useful),
+    "Bow":                  ItemData(11002, ItemClassification.progression),
+    "Bucket":               ItemData(11003, ItemClassification.progression),
+    "Crossbow":             ItemData(11004, ItemClassification.progression),
+    "Elytra":               ItemData(11005, ItemClassification.progression),
+    "Ender Pearl":          ItemData(11006, ItemClassification.progression),
+    "End Crystal":          ItemData(11007, ItemClassification.progression),
+    "Eye of Ender":         ItemData(11008, ItemClassification.progression),
+    "Fishing Rod":          ItemData(11009, ItemClassification.progression),
+    "Flint and Steel":      ItemData(11010, ItemClassification.progression),
+    "Golden Apple":         ItemData(11011, ItemClassification.progression),
+    "Mace":                 ItemData(11012, ItemClassification.progression),
+    "Map":                  ItemData(11013, ItemClassification.filler),
+    "Name Tag":             ItemData(11014, ItemClassification.filler),
+    "Ominous Bottle":       ItemData(11015, ItemClassification.progression),
+    "Potion":               ItemData(11016, ItemClassification.progression),
+    "Shears":               ItemData(11017, ItemClassification.progression),
+    "Shield":               ItemData(11018, ItemClassification.progression),
+    "Spyglass":             ItemData(11019, ItemClassification.progression),
+    "Totem of Undying":     ItemData(11020, ItemClassification.progression),
+    "Trident":              ItemData(11021, ItemClassification.progression),
+    "Turtle Shell":         ItemData(11022, ItemClassification.useful),
 
-# Unlocks for blocks that can be placed and/or interacted with
-block_unlocks: Dict[str, ItemData] = {
+    # ── Block unlocks ─────────────────────────────────────────────────────────
     "Anvil":                ItemData(12000, ItemClassification.useful),
     "Beacon":               ItemData(12001, ItemClassification.progression),
     "Bed":                  ItemData(12002, ItemClassification.progression),
@@ -85,11 +83,6 @@ block_unlocks: Dict[str, ItemData] = {
     "Target":               ItemData(12016, ItemClassification.progression),
     "TNT":                  ItemData(12017, ItemClassification.useful),
     "Torch":                ItemData(12018, ItemClassification.useful),
-}
-
-unlock_items: Dict[str, ItemData] = {
-    **item_unlocks,
-    **block_unlocks,    
 }
 
 # ── Gamerule items ─────────────────────────────────────────────────────────
