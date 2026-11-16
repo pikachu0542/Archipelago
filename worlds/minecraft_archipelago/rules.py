@@ -1,202 +1,328 @@
+from collections import defaultdict
+from collections.abc import Mapping
+from enum import Enum
+
+from rule_builder.options import OptionFilter
+from rule_builder.rules import And, CanReachEntrance, Has, HasAll, HasAllCounts, HasAny, HasGroup, Or, Rule, True_
 from worlds.generic.Rules import set_rule
 from typing import TYPE_CHECKING
+
+from worlds.minecraft_archipelago.options import ChestLootLogic, DaylightCycle, EnderDragonRequiredArmor, OuterEndAccessLogic, PhantomSpawning, Raids, RequiredBossKills, RequiredLootableChecks, StrongholdAccessLogic, WardenSpawning, WeatherCycle
 
 if TYPE_CHECKING:
     from . import MinecraftArchipelagoWorld
 
+# Define enum for tool tier levels
+class Tools(Enum):
+    """
+        Integer values for each of the possible tool tiers
+    """
+    WOOD = 0
+    STONE = 1
+    GOLD = 2
+    IRON = 3
+    DIAMOND = 4
+    NETHERITE = 5
+
+# Define enum for armor tier levels
+class Armor(Enum):
+    """
+        Integer values for each of the possible armor tiers
+    """
+    NONE = 0
+    LEATHER = 1
+    GOLD = 2
+    CHAINMAIL = 3
+    IRON = 4
+    DIAMOND = 5
+    NETHERITE = 6
+
+def can_kill_dragon(world: "MinecraftArchipelagoWorld"):
+    """
+    Checks if the player has unlocked the items needed to access the End.
+    """
+
+    return And(
+        CanReachEntrance("Overworld -> The End"),
+        HasAllCounts({
+        "Eye of Ender": 1,
+        "Progressive Armor": world.options.ender_dragon_required_armor.value,
+        "Progressive Tools": world.options.ender_dragon_required_tools.value,
+    }))
+
+def can_kill_wither(world: "MinecraftArchipelagoWorld"):
+    """
+    Checks if the player has unlocked the items needed to access the Nether.
+    """
+    return And(
+        CanReachEntrance("Overworld -> Nether"),
+        HasAllCounts({
+        "Flint and Steel": 1,
+        "Progressive Armor": world.options.wither_required_armor.value,
+        "Progressive Tools": world.options.wither_required_tools.value,
+    }))
+
+def can_kill_warden(world: "MinecraftArchipelagoWorld"):
+    """
+        Checks if the player has unlocked all the items needed to kill the Warden
+    """
+    return (
+        OptionFilter(WardenSpawning, True) & Has("WardenSpawning"),
+        HasAllCounts({
+            "Progressive Armor": world.options.warden_required_armor.value,
+            "Progressive Tools": world.options.warden_required_tools.value,
+        })
+    )
+
+def can_kill_elder_guardian(world: "MinecraftArchipelagoWorld"):
+    """
+        Checks if the player has unlocked all the items needed to kill the Elder Guardian
+    """
+    return HasAllCounts({
+        "Progressive Armor": world.options.elder_guardian_required_armor.value,
+        "Progressive Tools": world.options.elder_guardian_required_tools.value,
+    })
+
+def can_defeat_raid(world: "MinecraftArchipelagoWorld"):
+    """
+        Checks if the player has unlocked all the items needed to defeat a raid
+    """
+    return And(
+        OptionFilter(Raids, 1) & Has("Raids"),
+        HasAllCounts({
+            "Progressive Armor": world.options.raid_required_armor.value,
+            "Progressive Tools": world.options.raid_required_tools.value,
+        })
+    )
+
+def can_fight_trial_chamber(world: "MinecraftArchipelagoWorld"):
+    """
+        Checks if the player has unlocked all the items needed to take on trial chambers
+    """
+    return HasAllCounts({
+        "Progressive Armor": world.options.trial_chamber_required_armor.value,
+        "Progressive Tools": world.options.trial_chamber_required_tools.value,
+    })
 
 def set_rules(world: "MinecraftArchipelagoWorld") -> None:
-    player = world.player
-    mw = world.multiworld
-
-    # Shorthand helpers
-    def has(item: str, count: int = 1):
-        return lambda state: state.has(item, player, count)
+    entrance_rules: defaultdict[str, Rule] = defaultdict(True_)
+    location_rules: defaultdict[str, Rule] = defaultdict(True_)
     
-    def has_any(*items: str):
-        return lambda state: any(state.has(i, player) for i in items)
-    
-    def has_all(*items: str):
-        return lambda state: all(state.has(i, player) for i in items)
-    
-    def tools(tier: int):
-        """tier 1=stone, 2=gold, 3=iron, 4=diamond, 5=netherite"""
-        return lambda state: state.has("Progressive Tools", player, tier)
-
-    def armor(tier: int):
-        """tier 1=leather, 2=gold, 3=chainmail, 4=iron, 5=diamond, 6=netherite"""
-        return lambda state: state.has("Progressive Armor", player, tier)
-    
+    world.set_completion_rule(
+        (OptionFilter(RequiredBossKills, RequiredBossKills.ender_dragon, "contains") & Has("Ender Dragon Kill")) &
+        (OptionFilter(RequiredBossKills, RequiredBossKills.wither, "contains") & Has("Wither Kill")) &
+        (OptionFilter(RequiredBossKills, RequiredBossKills.elder_guardian, "contains") & Has("Elder Guardian Kill")) &
+        (OptionFilter(RequiredBossKills, RequiredBossKills.warden, "contains") & Has("Warden Kill")) &
+        (OptionFilter(RequiredLootableChecks, 0, "ne") & HasGroup("Lootable Checks", world.options.required_lootable_checks.value))
+    )
+            
     # ── Region entrance rules ─────────────────────────────────────────────
     # These are the most important — they stop the generator softlocking
     # by hiding required items behind regions you can't access yet.
 
-    # Entering the Nether requires lighting a portal with Flint and Steel
-    mw.get_entrance("Overworld -> Nether", player).access_rule = \
-        has("Flint and Steel")
+    entrance_rules["Overworld -> Nether"] = Has("Flint and Steel")
+    entrance_rules["Overworld -> The End"] = HasAll("Flint and Steel", "Eye of Ender")
+
+    # ── Story Advancements ─────────────────────────────────────────────────────────────
     
-    # Reaching the End requires Eyes of Ender
-    mw.get_entrance("Nether -> The End", player).access_rule = \
-        has("Eye of Ender")
-    
-    # Helper
-    def rule(location: str, *conditions) -> None:
-        if not conditions:
-            return
-        elif len(conditions) == 1:
-            combined = conditions[0]
-        else:
-            def combined(state):
-                return all(cond(state) for cond in conditions)
-        set_rule(mw.get_location(location, player), combined)
+    location_rules["Getting an Upgrade"] = HasAllCounts({"Progressive Tools": Tools.STONE})
 
+    location_rules["Acquire Hardware"] = OptionFilter(ChestLootLogic, 0) & HasAllCounts({
+        "Progressive Tools": Tools.STONE,
+        "Furnace": 1
+    })
 
-    # ── Story ─────────────────────────────────────────────────────────────
-    # Need buckets to get lava bucket
-    rule("Hot Stuff",              has("Bucket"))
+    location_rules["Suit Up"]  = OptionFilter(ChestLootLogic, 0) & HasAllCounts({
+        "Progressive Tools": Tools.STONE,
+        "Progressive Armor": Armor.IRON,
+        "Furnace": 1
+    })
 
-    # Building a nether portal requires Flint and Steel to ignite it
-    rule("We Need to Go Deeper",   has("Flint and Steel"))
+    location_rules["Hot Stuff"] = Has("Bucket")
 
-    # Curing a zombie villager requires using a weakness potion and a golden apple
-    rule("Zombie Doctor",          has_all("Golden Apple", "Potion"))
+    location_rules["Isn't It Iron Pick"]  = OptionFilter(ChestLootLogic, 0) & HasAllCounts({
+        "Progressive Tools": Tools.IRON,
+        "Furnace": 1
+    })
 
-    # Need eyes of ender to find stronghold and to enter the End
-    # Technically possible without, but not practical (requires a lot of luck)
-    rule("Eye Spy",               has("Eye of Ender"))
-    rule("The End?",             has("Eye of Ender"))
+    location_rules["Not Today, Thank You"] = Has("Shield")
+
+    location_rules["Ice Bucket Challenge"] = OptionFilter(ChestLootLogic, 0) & HasAllCounts({
+        "Progressive Tools": Tools.DIAMOND
+    }),
+
+    location_rules["Diamonds!"] = OptionFilter(ChestLootLogic, 0) & HasAllCounts({
+        "Progressive Tools": Tools.IRON
+    })
+
+    location_rules["We Need to Go Deeper"] = Has("Flint and Steel")
+
+    location_rules["Cover Me with Diamonds"] = OptionFilter(ChestLootLogic, 0) & HasAllCounts({
+        "Progressive Armor": Armor.DIAMOND
+    })
+
+    location_rules["Enchanter"] = Has("Enchanting Table")
+    location_rules["Zombie Doctor"] = HasAll("Golden Apple", "Potion")
+    location_rules["Eye Spy"] = OptionFilter(StrongholdAccessLogic, 1) & Has("Eye of Ender")
+    location_rules["The End?"] = Has("Eye of Ender")
 
     # ── Nether (already gated by region, adding extra requirements) ───────
 
-    # Full netherite armor set - need smithing table to upgrade armor
-    rule("Cover Me in Debris",      has("Smithing Table"))
+    location_rules["Hidden in the Depths"] = OptionFilter(ChestLootLogic, 0) & HasAllCounts({
+        "Progressive Tools": Tools.DIAMOND
+    })
 
-    rule("Local Brewery",           has("Brewing Stand"))
-    rule("Bring Home the Beacon",   has("Beacon"))
-    rule("Beaconator",              has("Beacon"))
+    # TODO: Is warped fungus on a stick locked behind fishing rod
 
-    # Potion advancements require being able to use potions
-    rule("A Furious Cocktail",     has("Potion"))
+    location_rules["Cover Me in Debris"] = OptionFilter(ChestLootLogic, 0) & HasAllCounts({
+        "Progressive Tools": Tools.DIAMOND,
+        "Progressive Armor": Armor.NETHERITE,
+        "Smithing Table": 1
+    })
+
+    location_rules["Not Quite 'Nine' Lives"] = Has("Respawn Anchor")
+    location_rules["Withering Heights"] = can_kill_wither()
+    location_rules["Local Brewery"] = Has("Brewing Stand")
+    location_rules["Bring Home the Beacon"] = Has("Beacon") & can_kill_wither()
+    location_rules["A Furious Cocktail"] = HasAll("Brewing Stand", "Potion")
+    location_rules["Beaconator"] = Has("Beacon") & can_kill_wither()
 
     # Need all of the following:
+    # - Armor and tools -> kill wither for beacon
     # - Beacon -> Haste
     # - Conduit -> Conduit Power
-    # - Potion -> effects from potions
+    # - Potion -> All potion effects
+    # - Brewing Stand -> Brew all needed potions
     # - Ominous Bottle -> Bad Omen, Raid Omen, Trial Omen
-    # - Warden Spawning -> Darkness
-    rule("How Did We Get Here?",   has_all("Beacon", "Conduit", "Ominous Bottle", "Potion", "Warden Spawning"))
+    # - Warden Spawning (if randomized) -> Darkness
+    location_rules["How Did We Get Here?"] = And(
+        OptionFilter(WardenSpawning, 1) & Has("Warden Spawning"),
+        HasAny("Bow", "Crossbow"),
+        HasAllCounts({
+            "Progressive Armor": max(world.options.wither_required_armor.value, world.options.raid_required_armor.value),
+            "Progressive Tools": max(world.options.wither_required_tools.value, world.options.raid_required_tools.value),
+            "Beacon": 1,
+            "Conduit": 1,
+            "Brewing Stand": 1,
+            "Potion": 1,
+            "Ominous Bottle": 1,
+        })
+    )
     
-    # ── No extra rules for any end advancements ──────────────────────────
-
+    # ── End (already gated by region, adding extra requirements) ───────
+    location_rules["Free the End"] = can_kill_dragon()
+    location_rules["The Next Generation"] = can_kill_dragon()
+    location_rules["The City at the End of the Game"] = OptionFilter(OuterEndAccessLogic, 1) & can_kill_dragon()
+    location_rules["Great View From Up Here"] = OptionFilter(OuterEndAccessLogic, 1) & can_kill_dragon()
+    
     # ── Adventure ─────────────────────────────────────────────────────────
 
-    # Shield deflect
-    rule("Not Today, Thank You",   has("Shield"))
+    # Dia pick and furnace to mine ancient debris for the netherite ingot in the recipe
+    # Or just get one from bridge bastion chest
+    location_rules["Country Lode, Take Me Home"] = And(
+        OptionFilter(ChestLootLogic, 0) & HasAllCounts({
+            "Progressive Tools": Tools.DIAMOND,
+            "Furnace": 1
+        }),
+        Has("Lodestone")
+    )
 
-    # Spyglass advancements
-    rule("Is It a Bird?",       has("Spyglass"))
-    rule("Is It a Balloon?",    has_all("Spyglass", "Flint and Steel"))
-    rule("Is It a Plane?",      has_all("Spyglass", "Eye of Ender"))
+    location_rules["Is It a Bird"] = Has("Spyglass")
 
-    # Smithing advancements
-    # Smithing with style needs end access for spire trim
-    rule("Crafting a New Look", has("Smithing Table"))
-    rule("Smithing with Style", has("Smithing Table", "Eye of Ender"))
+    # Only way to get armor trims is structure chests, 
+    # so the chest loot logic option doesnt matter here
+    location_rules["Crafting a New Look"] = Has("Smithing Table")
+    location_rules["Ol' Betsy"] = Has("Crossbow")
 
-    # Crossbow advancements
-    rule("Ol' Betsy",               has("Crossbow"))
-    rule("Two Birds, One Arrow",    has_all("Crossbow", "Phantom Spawning"))
-    rule("Who's the Pillager Now?", has("Crossbow"))
-    rule("Arbalistic",              has("Crossbow"))
+    # Need both trident and lightning rod to do the advancement
+    # Need enchanting table or anvil to get channeling on trident
+    # Need weather cycle for thunder so channeling works
+    location_rules["Surge Protector"] = And(
+        HasAll("Trident", "Lightning Rod"),
+        HasAny("Enchanting Table", "Anvil"),
+        OptionFilter(WeatherCycle, 1) & Has("Weather Cycle")
+    )
 
-    # Can be done with either bow or crossbow
-    rule("Take Aim",               has_any("Bow", "Crossbow"))
-    rule("Sniper Duel",            has_any("Bow", "Crossbow"))
-    rule("Bullseye",               has_any("Bow", "Crossbow"))
-
-    # Trident advancements
-    rule("A Throwaway Joke",       has("Trident"))
-    rule("Very Very Frightening",  has("Trident")) 
-    rule("Surge Protector",        has_all("Trident", "Lightning Rod"))
-
-    # Need beds to sleep
-    rule("Sweet Dreams",           has("Bed"))
+    location_rules["Sweet Dreams"] = OptionFilter(DaylightCycle, 1) & Has("Daylight Cycle")
+    location_rules["Hero of the Village"] = can_defeat_raid()
+    location_rules["Is It a Balloon?"] = CanReachEntrance("Overworld -> Nether") & Has("Spyglass")
+    location_rules["A Throwaway Joke"] = Has("Trident")
+    location_rules["Take Aim"] = HasAny("Bow", "Crossbow")
     
-    # Advancements requiring nether:
-    # - Country lode take me home -> lodestone (or netherite ingot)
-    # - Power of books -> need quartz to craft comparator
-    rule("Country Lode, Take Me Home", has("Flint and Steel"))
-    rule("The Power of Books", has("Flint and Steel"))
+    # Need to kill every hostile mob, including bosses
+    # only exception is the warden, which isnt required for this advancement
+    location_rules["Monsters Hunted"] = And(
+        CanReachEntrance("Overworld -> Nether"),
+        CanReachEntrance("Overworld -> The End"),
+        can_kill_dragon(),
+        can_kill_wither(),
+        can_kill_elder_guardian(),
+        can_fight_trial_chamber(),
+    )
 
-    # Need shears to carve pumpkin for summoning iron golem
-    rule("Hired Help",             has("Shears"))
+    location_rules["Postmortal"] = Has("Totem of Undying")
 
-    # Leather boots needed to walk on powder snow
-    rule("Light as a Rabbit",      armor(1))
-    
-    # Totem of Undying
-    rule("Postmortal",             has("Totem of Undying"))
+    location_rules["Hired Help"] = And(
+        OptionFilter(ChestLootLogic, 0) & HasAllCounts({
+            "Progressive Tools": Tools.STONE,
+            "Furnace": 1,
+        }),          
+        Has("Shears")
+    )
 
-    # Raids must be enabled to trigger and win a raid
-    rule("Hero of the Village",    has("Raids"))
+    location_rules["Smithing With Style"] = And(
+        OptionFilter(OuterEndAccessLogic, 1) & can_kill_dragon(),
+        Has("Smithing Table")
+    )
 
-    # Ominous bottle needed to create ominous vault
-    rule("Revaulting",             has("Ominous Bottle"))
+    location_rules["Two Birds, One Arrow"] = And(
+        OptionFilter(PhantomSpawning, 1) & Has("Phantom Spawning"),
+        Has("Crossbow"),
+        HasAny("Enchanting Table", "Anvil")
+    )
 
-    # Mace smash attack
-    rule("Over-Overkill",          has("Mace"))
-
-    # Ominous bottle needed to create ominous vault
-    rule("Revaulting",             has("Ominous Bottle"))
-
-    # Scraping copper needs an axe (any tool tier works)
-    rule("Lighten Up",             tools(1))
-
-    # Fishing
-    rule("Fishy Business",         has("Fishing Rod"))
-
-    # ── Nether (already gated by region, adding extra requirements) ───────
-
-    # Mining ancient debris needs diamond pickaxe
-    rule("Hidden in the Depths",   tools(4))
-
-    # Full netherite armor set — needs diamond tools to mine debris and smithing table to apply netherite
-    rule("Cover Me in Debris",     tools(4), has("Smithing Table"))
+    location_rules["Who's the Pillager Now?"] = Has("Crossbow")
+    location_rules["Arbalistic"] = Has("Crossbow") & HasAny("Enchanting Table", "Anvil")
+    location_rules["Light as a Rabbit"] = HasAllCounts({"Progressive Armor": Armor.LEATHER})
+    location_rules["Is It a Plane?"] = CanReachEntrance("Overworld -> The End") & Has("Spyglass")
+    location_rules["Very Very Frightening"] = Has("Trident") & HasAny("Enchanting Table", "Anvil")
+    location_rules["Sniper Duel"] = HasAny("Bow", "Crossbow")
+    location_rules["Bullseye"] = Has("Target") & HasAny("Bow", "Crossbow")
+    location_rules["Who Needs Rockets?"] = Has("Elytra") & can_fight_trial_chamber()
+    location_rules["Under Lock and Key"] = can_fight_trial_chamber()
+    location_rules["Revaulting"] = Has("Ominous Bottle") & can_fight_trial_chamber()
+    location_rules["Blowback"] = can_fight_trial_chamber()
+    location_rules["Over-Overkill"] = Has("Mace")
 
     # ── Husbandry ─────────────────────────────────────────────────────────
     
-    # Fishing
-    rule("Fishy Business",              has("Fishing Rod"))
+    location_rules["Bee Our Guest"] = Has("Campfire")
+    location_rules["Whatever Floats Your Goat!"] = Has("Boat")
+    location_rules["Fishy Business"] = Has("Fishing Rod")
+    location_rules["Bukkit Bukkit"] = Has("Bucket")
+    location_rules["Two By Two"] = CanReachEntrance("Overworld -> Nether")
+    location_rules["Tactical Fishing"] = Has("Bucket")
 
-    # Bucket related advancements
-    rule("Bukkit Bukkit",               has("Bucket"))
-    rule("Tactical Fishing",            has("Bucket"))
-    rule("The Cutest Predator",         has("Bucket"))
+    # Need outer end access for chorus fruit
+    location_rules["A Balanced Diet"] = And(
+        CanReachEntrance("Overworld -> The End"),
+        OptionFilter(OuterEndAccessLogic, 1) & can_kill_dragon()
+    )
 
-    # Need campfire to safely collect honey
-    rule("Bee Our Guest",               has("Campfire"))
+    location_rules["Serious Dedication"] = And(
+        CanReachEntrance("Overworld -> Nether"),
+        OptionFilter(ChestLootLogic, 0) & HasAllCounts({
+            "Progressive Tools": Tools.DIAMOND
+        }),
+        Has("Smithing Table")
+    )
 
-    # Get in a boat with a goat
-    rule("Whatever Floats Your Goat!",  has("Boat"))
-
-   # Remove wolf armor with shears
-    rule("Shear Brilliance",            has("Shears"))
-
-    # Advancements that need nether:
-    # - Stay Hydrated -> get dried ghast
-    # - With Our Powers Combined -> frogs need to eat magma cubes
-    # - Two by Two -> breed hoglins & striders
-    # - Serious Dedication -> get netherite ingot & upgrade template
-    rule("Stay Hydrated!",              has("Flint and Steel"))
-    rule("With Our Powers Combined!",   has("Flint and Steel"))
-    rule("Two by Two",                  has("Flint and Steel"))
-    rule("Serious Dedication",          has_all("Flint and Steel", "Smithing Table"))
-
-    # Eat all foods - need end to eat chorus fruit
-    rule("A Balanced Diet",             has("Eye of Ender"))
+    location_rules["The Cutest Predator"] = Has("Bucket")
+    location_rules["With Our Powers Combined!"] = CanReachEntrance("Overworld -> Nether")
+    location_rules["Shear Brilliance"] = Has("Shears")
 
     # ── Boss kills ────────────────────────────────────────────────────────────
-    # Ender Dragon Kill is already gated by The End region (Eye of Ender)
-    rule("Wither Kill",                 has("Flint and Steel"))
-    rule("Warden Kill",                 has("Warden Spawning")) 
-    # Elder Guardian Kill has no gate
+    location_rules["Ender Dragon Kill"] = can_kill_dragon()
+    location_rules["Wither Kill"] = can_kill_wither()
+    location_rules["Elder Guardian Kill"] = can_kill_elder_guardian()
+    location_rules["Warden Kill"] = can_kill_warden()

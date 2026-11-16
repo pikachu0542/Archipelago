@@ -104,7 +104,7 @@ gamerule_items: Dict[str, ItemData] = {
 
     "Phantom Spawning":             ItemData(13008, ItemClassification.progression),        # doInsomnia true
     "Pillager Patrol Spawning":     ItemData(13009, ItemClassification.useful),             # doPatrolSpawning true
-    "Wandering Traders":            ItemData(13010, ItemClassification.useful),             # doTraderSpawning true
+    "Wandering Trader Spawning":    ItemData(13010, ItemClassification.useful),             # doTraderSpawning true
     "Warden Spawning":              ItemData(13011, ItemClassification.progression),        # doWardenSpawning true
 
     "Daylight Cycle":               ItemData(13012, ItemClassification.progression),        # doDaylightCycle true

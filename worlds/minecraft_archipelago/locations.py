@@ -41,7 +41,7 @@ nether_advancement_locations: Dict[str, LocationData] = {
     "Subspace Bubble":              LocationData(20018, "Nether"),
     "A Terrible Fortress":          LocationData(20019, "Nether"),
     "Who Is Cutting Onions?":       LocationData(20020, "Nether"),
-    "Oh Shiny":                    LocationData(20021, "Nether"),
+    "Oh Shiny":                     LocationData(20021, "Nether"),
     "This Boat Has Legs":           LocationData(20022, "Nether"),
     "Uneasy Alliance":              LocationData(20023, "Nether"),
     "War Pigs":                     LocationData(20024, "Nether"),

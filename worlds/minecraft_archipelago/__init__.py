@@ -2,6 +2,7 @@ import math
 from typing import Dict, Any, List
 
 from worlds.AutoWorld import World
+from .options import minecraft_option_groups
 from BaseClasses import Region, Location, Item
 
 from .items import (
@@ -35,6 +36,8 @@ class MinecraftArchipelagoWorld(World):
     options_dataclass = MinecraftArchipelagoOptions
     options: MinecraftArchipelagoOptions
 
+    option_groups = minecraft_option_groups
+    
     # These two dicts are required by Archipelago.
     # They tell the server what item and location IDs this game uses.
     item_name_to_id = {name: data.code for name, data in item_table.items()}
@@ -112,7 +115,7 @@ class MinecraftArchipelagoWorld(World):
         pool: List[str] = []
 
         # Progressive items — one copy per tier
-        # (e.g. Progressive Tools appears 4 times: stone, iron, diamond, netherite)
+        # (e.g. Progressive Tools appears 5 times: stone, gold, iron, diamond, netherite)
         for name, count in PROGRESSIVE_ITEM_COUNTS.items():
             pool.extend([name] * count)
 
@@ -121,6 +124,7 @@ class MinecraftArchipelagoWorld(World):
             pool.append(name)
 
         # Gamerule items — one copy each
+        # TODO: Need to check options and only add the gamerules that were chosen to be shuffled
         for name in gamerule_items:
             pool.append(name)
 
@@ -135,6 +139,7 @@ class MinecraftArchipelagoWorld(World):
 
         # Fill any remaining slots with random filler items.
         # There are 112 locations and 39 important items, so we need 73 fillers.
+        # TODO: update the numbers in the above comment
         filler_pool = list(filler_items.keys())
         remaining = total_active - len(pool)
 
@@ -219,4 +224,23 @@ class MinecraftArchipelagoWorld(World):
             "required_boss_kills": sorted(list(self.options.required_boss_kills.value)),
             "required_lootable_checks": self.options.required_lootable_checks.value,
             "required_item_collections": sorted(list(self.options.required_item_collections.value)),
+            
+            "drowning_damage": self.options.drowning_damage.value,
+            "fire_damage": self.options.fire_damage.value,
+            "freeze_damage": self.options.freeze_damage.value,
+            "fall_damage": self.options.fall_damage.value,
+            "keep_inventory": self.options.keep_inventory.value,
+            "natural_regeneration": self.options.keep_inventory.value,
+            "raids": self.options.raids.value,
+            "mob_griefing": self.options.mob_griefing.value,
+            "phantom_spawning": self.options.phantom_spawning.value,
+            "pillager_patrol_spawning": self.options.pillager_patrol_spawning.value,
+            "wandering_trader_spawning": self.options.wandering_trader_spawning.value,
+            "warden_spawning": self.options.warden_spawning.value,
+            "daylight_cycle": self.options.daylight_cycle.value,
+            "weather_cycle": self.options.weather_cycle.value,
+            "lava_source_conversion": self.options.lava_source_conversion.value,
+            "water_source_conversion": self.options.water_source_conversion.value
+
+            # TODO: Figure out whether i need to pass the logic options to the mod
         }
